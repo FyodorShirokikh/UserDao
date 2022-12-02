@@ -9,7 +9,7 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
 
-    Connection connection = Util.getConnection();
+    private Connection connection = Util.getConnection();
     public UserDaoJDBCImpl() {
 
     }
@@ -23,7 +23,7 @@ public class UserDaoJDBCImpl implements UserDao {
         try {
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Table User already exists or another problem.");
             //throw new RuntimeException(e);
         } finally {
