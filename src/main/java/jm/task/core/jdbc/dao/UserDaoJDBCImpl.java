@@ -8,132 +8,78 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-
-    private Connection connection = Util.getConnection();
     public UserDaoJDBCImpl() {
-
     }
-
-    public void createUsersTable() {
+    public void createUsersTable() throws Exception {
         PreparedStatement preparedStatement = null;
         String sql = "CREATE TABLE User (id int auto_increment primary key," +
                 "name varchar(255) not null," +
                 "lastName varchar(255) not null," +
                 "age int not null)";
-        try {
+        try (Connection connection = Util.getConnection()) {
+            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("Table User already exists or another problem.");
-            //throw new RuntimeException(e);
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-//            if (connection != null) {
-//                try {
-//                    connection.close();
-//                } catch (SQLException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (Exception exception) {
+            System.out.println(exception);
         }
     }
 
-    public void dropUsersTable() {
+    public void dropUsersTable() throws Exception {
         PreparedStatement preparedStatement = null;
         String sql = "DROP TABLE User";
-        try {
+        try (Connection connection = Util.getConnection()) {
+            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.executeUpdate();
-        } catch (Exception e) {
-            System.out.println("Can't find table User or another problem.");
-            //throw new RuntimeException(e);
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-//            if (connection != null) {
-//                try {
-//                    connection.close();
-//                } catch (SQLException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-       }
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (Exception exception) {
+            System.out.println(exception);
+        }
     }
 
-    public void saveUser(String name, String lastName, byte age) {
+    public void saveUser(String name, String lastName, byte age) throws Exception {
         PreparedStatement preparedStatement = null;
         String sql = "INSERT INTO User (name, lastName, age) "
                 + " values (?, ?, ?) ";
-        try {
+        try (Connection connection = Util.getConnection()) {
+            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setInt(3, age);
             preparedStatement.executeUpdate();
+            connection.commit();
+            connection.setAutoCommit(true);
             System.out.println("User с именем " + name + " добавлен в базу данных");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-//            if (connection != null) {
-//                try {
-//                    connection.close();
-//                } catch (SQLException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
+        } catch (Exception exception) {
+            System.out.println(exception);
         }
     }
 
-    public void removeUserById(long id) {
+    public void removeUserById(long id) throws Exception {
         PreparedStatement preparedStatement = null;
         String sql = "DELETE FROM User WHERE id=?";
-        try {
+        try (Connection connection = Util.getConnection()) {
+            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-//            if (connection != null) {
-//                try {
-//                    connection.close();
-//                } catch (SQLException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (Exception exception) {
+            System.out.println(exception);
         }
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws Exception {
         List<User> userList = new ArrayList<>();
         String sql = "SELECT * FROM User";
         Statement statement = null;
-        try {
+        try (Connection connection = Util.getConnection()) {
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
@@ -144,50 +90,24 @@ public class UserDaoJDBCImpl implements UserDao {
                 user.setAge(resultSet.getByte("age"));
                 userList.add(user);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-//            if (connection != null) {
-//                try {
-//                    connection.close();
-//                } catch (SQLException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
+        }
+        catch(Exception exception){
+            System.out.println(exception);
         }
         return userList;
     }
 
-    public void cleanUsersTable() {
+    public void cleanUsersTable() throws Exception {
         PreparedStatement preparedStatement = null;
         String sql = "DELETE FROM User";
-        try {
+        try (Connection connection = Util.getConnection()) {
+            connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-//            if (connection != null) {
-//                try {
-//                    connection.close();
-//                } catch (SQLException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (Exception exception) {
+            System.out.println(exception);
         }
     }
 }
